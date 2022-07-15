@@ -1,6 +1,6 @@
 ---
 title: "linear model from Web"
-author: "Rile Wheeler"
+author: "Riley Wheeler"
 date: "Summer 2022"
 output:
    html_document:
@@ -39,11 +39,14 @@ lmr = lm(SIMS~ARM, data = data)
 abline(lmr)
 ```
 
+This graph shows a gradually increasing linear relation between SIMS and ARM size.
+
 ### Numerical results
 
 ```{r}
 cor(SIMS~ARM,data=data)
 ```
+The value for SIMS~ARM is .686.
 
 ### Inferential (Build model.1)
 
@@ -51,7 +54,7 @@ cor(SIMS~ARM,data=data)
 summary(lmr)
 newdata = c(GRIP=94, ARM = 88)
 ```  
-For every 1lb increase in arm strength, there was an increase in sim...
+For every 1lb increase in arm strength, there was an increase in SIM, and the adjusted r-squared is .467
 
 #### Predict at target point
 
@@ -59,14 +62,14 @@ For every 1lb increase in arm strength, there was an increase in sim...
 predictSIM = predict.lm(lmr, newdata = data.frame(GRIP = 94, ARM = 88))
 print(predictSIM)
 ```
-
+The predicted target point is about .71.
 
 #### scatterplot with model fit
 
 ```{r}
 plot(lmr)
 ```
-
+The residuals versus leverage line of best fit seems to be near zero slope, similar to the residuals vs. Fitted and scale location. The notmal Q-Q is a gradually increasing line.
 
 ## Model 2 SIM\~GRIP
 
@@ -75,41 +78,72 @@ plot(lmr)
 ### Now add in scatterplot
 
 ```{r}
-plot(SIMS~ARM,data=data)
-lmr = lm(SIMS~ARM, data = data)
-abline(lmr)
+plot(SIMS~GRIP,data=data)
+lmg = lm(SIMS~GRIP, data = data)
+abline(lmg)
 ```
+
+Just like the SIM~ARMS graph, this shows a positive linear relationship between GRIP and SIMS
 
 ### Numerical results
 
 ```{r}
-cor(SIMS~ARM,data=data)
+cor(SIMS~GRIP,data=data)
 ```
+
+The value for SIMS~GRIP is .6398 while SIMS~ARM was .686.
 
 ### Inferential (Build model.2)
 
+```{r}
+summary(lmg)
+newdata = c(GRIP=94, ARM = 88)
+``` 
+
+The p-value is nearly zero and the Adjusted R-squared is .405.
+
 #### predict model.2 at target point
 
+```{r}
+predictSIM = predict.lm(lmg, newdata = data.frame(GRIP = 94, ARM = 88))
+print(predictSIM)
+```
+
+The target point for model 1.2 is drastically different from model 1, sitting at -.54.
+
 #### now add the model fit to our plot for model.2
+
+```{r}
+plot(lmg)
+```
+
+These graphs look nearly identical to those of model 1. The residuals versus leverage line of best fit seems to be near zero slope, similar to the residuals vs. Fitted and scale location. The normal Q-Q is a gradually increasing line.
+
+## Model 3 SIM\~ARM+GRIP
 
 ```{r}
 data2 = lm(SIMS~ARM+GRIP, data = data)
 summary(data2)
 ```
 
-
-## Model 3 SIM\~ARM+GRIP
+The adjusted r-squared is lowest here in model 3, sitting at .53 and the p value is the same as before, nearly 0.
 
 ### Numerical results (cor)
 
-\`
+```{r}
+cor(SIMS~ARM+GRIP,data=data)
+```
+
+The results for model 3 appear to be higher than model 1 and 2 by a significant margin at .73.
 
 ### Inferential (Build 2-dimentional model.3)
 
 ```{r}
-summary(lmr)
+summary(data2)
 newdata = c(GRIP=94, ARM = 88)
 ``` 
+
+The adjusted r-suqaared is about .54 and teh P value is 2.2e-16.
 
 #### predict model.3 at target point
 
@@ -117,11 +151,16 @@ newdata = c(GRIP=94, ARM = 88)
 predict.lm(data2, newdata = data.frame(GRIP = 94, ARM = 88))
 ```
 
+Model 3 at target point is in between 1 and two at .15.
+
 ## Comparing nested models ANOVA Test
 
 ```{r}
 plot(lmr)
 ```
+
+Again, these graphs look nearly identical to those of models 1 and 2. The residuals versus leverage line of best fit seems to be near zero slope, similar to the residuals vs. Fitted and scale location. The normal Q-Q is a gradually increasing line.
+
 ### Model.1 vs Model.3
 
 ```{r}
@@ -129,10 +168,16 @@ anova(lmr, data2)
 ```
 
 
+
 ### Model.2 vs Model.3
 
 ```{r}
-anova(GRIP, data2)
+anova(lmg, data2)
 ```
 
+
+
 ## Informally compare Model.1 with model.2
+
+Model 1 is better than model two because the numerical results showed that SIMS~GRIP is .6398 while SIMS~ARM was .686. Additionally, the adjusted r-squared for Model 1 was higher than model 2 because .467>.405, and model 2's target point was way negative at -0.5361543, while model 1's was positive at 0.7063836.
+
